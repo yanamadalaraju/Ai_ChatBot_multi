@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advanced AI Chatbot</title>
-  
+   <!-- Load static files -->
+   {% load static %}
+  <link rel="icon" href="{% static 'images/Ai_chat_bot.png' %}" type="image/x-icon">
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -160,6 +162,7 @@
       color: #1565c0;
     }
     /* Dark Mode Styles */
+    
     body.dark-mode {
       background: #121212;
       color: #ffffff;
@@ -207,7 +210,7 @@
     body.dark-mode #theme-toggle:hover {
       background: #555;
     }
-
+    
     /* Language Selection */
     #language-select {
       margin-left: 20px; /* Space between title and language selector */

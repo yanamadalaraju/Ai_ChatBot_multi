@@ -16,4 +16,3 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.role.capitalize()} at {self.timestamp}"
-

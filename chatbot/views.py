@@ -15,7 +15,6 @@ def chatbot_response(request):
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "").strip()
-            language = data.get("language", "en")  # Default to English if no language is provided
             if not user_message:
                 return JsonResponse({"error": "Message cannot be empty"}, status=400)
 
@@ -47,8 +46,7 @@ def chatbot_response(request):
 
             payload = {
                 "model": "gpt-3.5-turbo",  # Change model as needed
-                "messages": conversation,
-                "language": language  # Include the selected language
+                "messages": conversation
             }
 
             response = requests.post(OPENROUTER_API_URL, headers=headers, json=payload)
@@ -65,11 +63,7 @@ def chatbot_response(request):
                 bot_reply = response_data["choices"][0]["message"]["content"]
                 # Store bot's reply in the DB
                 ChatMessage.objects.create(session=chat_session, role="assistant", content=bot_reply)
-
-                # Generate dynamic suggestions based on user input
-                suggestions = generate_suggestions(user_message)
-
-                return JsonResponse({"reply": bot_reply, "suggestions": suggestions})
+                return JsonResponse({"reply": bot_reply})
 
             return JsonResponse({"error": f"API error: {response.status_code}, {response.text}"}, status=500)
 
@@ -79,64 +73,12 @@ def chatbot_response(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=400)
 
-def generate_suggestions(user_message):
-    # Simple logic to generate suggestions based on keywords in the user message
-    suggestions = []
-    
-    # Example logic for generating suggestions based on keywords
-    if "python" in user_message.lower():
-        suggestions = [
-            "Features of Python",
-            "Applications of Python",
-            "Examples of Python",
-            "Python Libraries",
-            "Python vs Other Languages"
-        ]
-    elif "javascript" in user_message.lower():
-        suggestions = [
-            "Features of JavaScript",
-            "Applications of JavaScript",
-            "Examples of JavaScript",
-            "JavaScript Frameworks",
-            "JavaScript vs Other Languages"
-        ]
-    elif "machine learning" in user_message.lower():
-        suggestions = [
-            "What is Machine Learning?",
-            "Applications of Machine Learning",
-            "Machine Learning Algorithms",
-            "Machine Learning vs Deep Learning",
-            "Getting Started with Machine Learning"
-        ]
-    elif "data science" in user_message.lower():
-        suggestions = [
-            "What is Data Science?",
-            "Applications of Data Science",
-            "Data Science Tools",
-            "Data Science vs Data Analytics",
-            "Getting Started with Data Science"
-        ]
-    elif "web development" in user_message.lower():
-        suggestions = [
-            "Front-end vs Back-end Development",
-            "Popular Web Development Frameworks",
-            "Web Development Tools",
-            "Getting Started with Web Development",
-            "Best Practices in Web Development"
-        ]
-    else:
-        # Default suggestions for general queries
-        suggestions = [
-            "Can you elaborate?",
-            "What do you mean by that?",
-            "Do you have any examples?",
-            "Tell me more about it."
-        ]
-    
-    return suggestions
 
 @csrf_exempt
 def clear_conversation(request):
+    """
+    Clears the current conversation. Before clearing, it saves the current session ID in a list of previous sessions.
+    """
     if request.method == "POST":
         current_session_id = request.session.get("chat_session_id")
         if current_session_id:
@@ -144,12 +86,17 @@ def clear_conversation(request):
             if current_session_id not in previous_sessions:
                 previous_sessions.append(current_session_id)
             request.session["previous_chat_sessions"] = previous_sessions
+        # Create a new chat session for a fresh conversation
         new_session = ChatSession.objects.create()
         request.session["chat_session_id"] = new_session.id
         return JsonResponse({"status": "Conversation cleared", "new_session_id": new_session.id})
     return JsonResponse({"error": "Invalid request method"}, status=400)
 
+
 def get_chat_history(request):
+    """
+    Returns previous chat history sessions stored for this browser session.
+    """
     if request.method == "GET":
         previous_sessions = request.session.get("previous_chat_sessions", [])
         history = []
@@ -174,6 +121,7 @@ def get_chat_history(request):
                 continue
         return JsonResponse({"history": history})
     return JsonResponse({"error": "Invalid request method"}, status=400)
+
 
 def chat_page(request):
     return render(request, "chatbot/chat.html")

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(7+gr$7h(c1t)8lh)&*bz6vkia@72e(%f3o5_wd5*!c+u$)k$2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ ]
 
 
 # Application definition
@@ -127,7 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # chatbot_project/settings.py
 import os
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",  # ✅ Django local server
