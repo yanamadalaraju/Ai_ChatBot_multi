@@ -127,7 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # chatbot_project/settings.py
 import os
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",  # ✅ Django local server
